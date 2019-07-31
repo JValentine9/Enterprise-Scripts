@@ -12,9 +12,9 @@ args = parser.parse_args()
 CPU_INTERVAL = 1
 
 
-def getListOfProcessSortedByMemory():
+def getListOfProcessSortedByCPU():
     '''
-    Get list of running process sorted by Memory Usage
+    Get list of running process sorted by CPU Usage
     '''
     listOfProcObjects = []
     # Iterate over the list
@@ -29,10 +29,10 @@ def getListOfProcessSortedByMemory():
            pass
 
     # Sort list of dict by key vms i.e. memory usage
-    listOfProcObjects = sorted(listOfProcObjects,key=lambda procObj: procObj['cpu'],reverse=True)
+    listOfProcObjects = sorted(listOfProcObjects,key=lambda procObj: procObj['cpu'],reverse=False)
     return listOfProcObjects
 
-pid_list = getListOfProcessSortedByMemory()[:5]
+pid_list = getListOfProcessSortedByCPU()[:5]
 
 for dItem in pid_list:
     print(dItem)
