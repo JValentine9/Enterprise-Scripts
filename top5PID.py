@@ -8,6 +8,10 @@ parser.add_argument("-c","--critical",help="Percent total cpu host utilization a
 
 args = parser.parse_args()
 
+#Compares system CPU times elapsed before and after interval. Should be at least .1
+CPU_INTERVAL = 1
+
+
 def getListOfProcessSortedByMemory():
     '''
     Get list of running process sorted by Memory Usage
@@ -25,16 +29,15 @@ def getListOfProcessSortedByMemory():
            pass
 
     # Sort list of dict by key vms i.e. memory usage
-    listOfProcObjects = sorted(listOfProcObjects,key=lambda procObj: procObj['vms'],reverse=True)
+    listOfProcObjects = sorted(listOfProcObjects,key=lambda procObj: procObj['pid'],reverse=True)
     return listOfProcObjects
 
-pid_list = getListOfProcessSortedByMemory
+pid_list = getListOfProcessSortedByMemory()[:5]
 
 for i in range(5):
 	print(pid_list)
 
 #Compares system CPU times elapsed before and after interval. Should be at least .1
-""" CPU_INTERVAL = 1
 
 cpu_pct = psutil.cpu_percent(interval=CPU_INTERVAL)
 
@@ -46,4 +49,4 @@ elif cpu_pct >= args.critical:
         sys.exit(2)
 else:
         print ('OK')
-        sys.exit(0) """
+        sys.exit(0)
