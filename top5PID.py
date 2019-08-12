@@ -32,6 +32,7 @@ def setSeverity(cpu_percent, pname):
 
 #proc = collections.OrderedDict()
 def GetProcessInformation(p):
+        # Will skip over the idle process which will always be PID 0
         if(p == 0): return
         CPU_INTERVAL = 1
         proc = {}#collections.OrderedDict()
@@ -42,35 +43,42 @@ def GetProcessInformation(p):
                 proc['PID'], proc['Component'], proc['User'] = p.pid, p.name(), p.username()
 
                 # Creates a reference point for the process's CPU checks
-                #p.cpu_percent(interval=CPU_INTERVAL)
+                # p.cpu_percent(interval=CPU_INTERVAL)
 
                 # Does the second CPU check and records it to the dictionary
                 proc['CPU_Usage'] = p.cpu_percent(interval=CPU_INTERVAL)
                 
                 # Checks and records the severity and summary with the setSeverity()
                 proc['Severity'], proc['Summary'] = setSeverity(proc['CPU_Usage'], proc['Component'])
+                # Gets current timestamp, hostname & IP
                 proc['Timestamp'] = now.strftime('%Y-%m-%d %H:%M')
                 proc['Source'] = socket.gethostname() + ' - ' + socket.gethostbyname(socket.gethostname())
+                # This is where you cna set the class and Group for PagerDuty integration
                 proc['Class'] = 'Process by CPU'
                 proc['Group'] = ''
                         
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 pass
+        # Ensures that proc is not returned unless CPU_Usage is over 0
+        # Returning usable data 
         if (bool(proc) and proc['CPU_Usage'] > 0.0):
                 return proc
 
-
-# Sets pid_list to list of dictionary and limits it to the first five dictionaries (top five)
-stime = time.time()
-
 if __name__ == "__main__":
+        # splits up the lookup and check of each process.
+        # mp is for multiprocessing - pool will split based on how many processors there are
         pool = mp.Pool(mp.cpu_count())
+        # pool.map will run the function GetProcessInformation on every item in psutil.pids.
+        # List(filter()) will remove anything that returns 
         pid_list = list(filter(None, pool.map(GetProcessInformation, psutil.pids())))
-        
+        # Sorts pid_list by CPU_usage
         pid_list = sorted(pid_list, key = lambda i: i['CPU_Usage'],reverse=True)
 
-        print(time.time() - stime)
-
-        for x in pid_list[5]:
-                print(x['Summary'], x['Source'], x['Severity'], x['Timestamp'], x['Class'], x['Component'], x['Group'], sep='\t')
-        print()
+        # Attempts to loop through the top five, if there is an out of bounds error then it will iterate
+        # through whatever is in the list.
+        try:
+                for x in pid_list[5]:
+                        print(x['Summary'], x['Source'], x['Severity'], x['Timestamp'], x['Class'], x['Component'], x['Group'], sep='\t')
+        except IndexError:
+                for x in pid_list:
+                        print(x['Summary'], x['Source'], x['Severity'], x['Timestamp'], x['Class'], x['Component'], x['Group'], sep='\t')
