@@ -14,7 +14,7 @@ args = parser.parse_args()
 FileContents=[]
 
 def ProcessData():
-        with open('C:\\temp\\WizTreeTest.csv', 'r') as f:
+        with open('C:\\temp\\WizTreeExport.csv', 'r') as f:
                 FileContents = [{k: v for k, v in row.items()} for row in csv.DictReader(f, skipinitialspace=True)]
         FileContents = sorted(FileContents, key = lambda i: i['b'], reverse = True)
         #FileContents[:5]
