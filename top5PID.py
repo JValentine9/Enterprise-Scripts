@@ -24,29 +24,25 @@ def influxOutput(proc):
         metric.add_tag('platform', platform.platform())
         
         for k,v in zip(proc.keys(),proc.values()):
-                if type(v) is int:
-                        metric.add_value(k,v)
                 if type(v) is float:
                         metric.add_value(k,v)
                 if type(v) is str:
                         metric.add_tag(k,v)
         print(metric)
 
-
-
-def setSeverity(cpu_percent, pname):
+def setSeverity(cpu_percent, pname, pID):
         '''
-        Compares system CPU times elapsed before and after interval.
+        Compares system CPU times elapsed before and after interval. Should be at least .1
         Pass in CPU_Percent to compare against and the Process's name to attach to summary.
         '''
         if cpu_percent >= args.warning and cpu_percent < args.critical:
-                return 'WARNING', 'CPU utilization at %s percent on %s'%(cpu_percent, pname)
+                return 'WARNING', 'CPU utilization at %s percent on %s %s'%(cpu_percent, pname, pID)
                 #sys.exit(1)
         elif cpu_percent >= args.critical:
-                return 'CRITICAL', 'CPU utilization at %s percent on %s'%(cpu_percent, pname)
+                return 'CRITICAL', 'CPU utilization at %s percent on %s %s'%(cpu_percent, pname, pID)
                 #sys.exit(2)
         else:
-                return 'OK', 'CPU utilization at %s percent on %s'%(cpu_percent, pname)
+                return 'OK', 'CPU utilization at %s percent on %s %s'%(cpu_percent, pname, pID)
                 #sys.exit(0)
 
 def hoglist(delay=5):
@@ -70,10 +66,9 @@ def hoglist(delay=5):
         # if (proc.name() == 'python'): continue
         try:
                 percent = proc.cpu_percent(None)
-                severity, summary = setSeverity(percent, proc.name())
+                severity, summary = setSeverity(percent, proc.name(), proc.pid)
                 if percent:
                         procs.append({
-                            'pid': proc.pid,
                             'name': proc.name(),
                             'user': proc.username(),
                             'cpu_percent': percent,
@@ -93,9 +88,14 @@ def main():
         pid_list = hoglist()
         pid_list.sort(key = lambda i: i['cpu_percent'], reverse=True)
 
-        for x in range(5):
+        for x in range(len(pid_list)):
                 influxOutput(pid_list[x]) if args.influxout else print(pid_list[x])
-
+                if (x == 4): break
+        if (len(pid_list) < 5):
+                x = len(pid_list)
+                while(x < 5):
+                        print('-', '-', '-', '-', '-', '-', sep='\t')
+                        x += 1
         sys.exit(0)
 
 if __name__ == '__main__':
