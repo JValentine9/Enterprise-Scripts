@@ -24,6 +24,8 @@ def influxOutput(proc):
         metric.add_tag('platform', platform.platform())
         
         for k,v in zip(proc.keys(),proc.values()):
+                if type(v) is int:
+                        metric.add_value(k,v)
                 if type(v) is float:
                         metric.add_value(k,v)
                 if type(v) is str:
@@ -32,19 +34,19 @@ def influxOutput(proc):
 
 
 
-def setSeverity(cpu_percent, pname, pID):
+def setSeverity(cpu_percent, pname):
         '''
-        Compares system CPU times elapsed before and after interval. Should be at least .1
+        Compares system CPU times elapsed before and after interval.
         Pass in CPU_Percent to compare against and the Process's name to attach to summary.
         '''
         if cpu_percent >= args.warning and cpu_percent < args.critical:
-                return 'WARNING', 'CPU utilization at %s percent on %s %s'%(cpu_percent, pname, pID)
+                return 'WARNING', 'CPU utilization at %s percent on %s'%(cpu_percent, pname)
                 #sys.exit(1)
         elif cpu_percent >= args.critical:
-                return 'CRITICAL', 'CPU utilization at %s percent on %s %s'%(cpu_percent, pname, pID)
+                return 'CRITICAL', 'CPU utilization at %s percent on %s'%(cpu_percent, pname)
                 #sys.exit(2)
         else:
-                return 'OK', 'CPU utilization at %s percent on %s %s'%(cpu_percent, pname, pID)
+                return 'OK', 'CPU utilization at %s percent on %s'%(cpu_percent, pname)
                 #sys.exit(0)
 
 def hoglist(delay=5):
@@ -68,7 +70,7 @@ def hoglist(delay=5):
         # if (proc.name() == 'python'): continue
         try:
                 percent = proc.cpu_percent(None)
-                severity, summary = setSeverity(percent, proc.name(), proc.pid)
+                severity, summary = setSeverity(percent, proc.name())
                 if percent:
                         procs.append({
                             'pid': proc.pid,
