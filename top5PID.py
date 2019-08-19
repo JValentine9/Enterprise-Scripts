@@ -41,7 +41,7 @@ def setSeverity(cpu_percent, pname, pID):
                 return 'CRITICAL', 'CPU\ utilization\ at\ %s\ percent\ on\ %s\ %s'%(cpu_percent, pname, pID)
                 #sys.exit(2)
         else:
-                return 'OK', 'CPU\ utilization\ at\ %s\ percent\ on\ %s \%s'%(cpu_percent, pname, pID)
+                return 'OK', 'CPU\ utilization\ at\ %s\ percent\ on\ %s\ %s'%(cpu_percent, pname, pID)
                 #sys.exit(0)
 
 def hoglist(delay=5):
