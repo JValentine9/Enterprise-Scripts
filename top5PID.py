@@ -65,12 +65,13 @@ def hoglist(delay=5):
         # if (proc.name() == 'python'): continue
         try:
                 percent = proc.cpu_percent(None)
-                #user = proc.username() == 'NT AUTHORITY SYSTEM' 
+                user = proc.username()
+                if (proc.username() == 'NT AUTHORITY\SYSTEM'): user = 'system'
                 severity, summary = setSeverity(percent, proc.name(), proc.pid)
                 if percent:
                         procs.append({
                             'name': proc.name(),
-                            'user': proc.username(),
+                            'user': user,
                             'cpu_percent': percent,
                             'severity': severity,
                             'summary': summary,
