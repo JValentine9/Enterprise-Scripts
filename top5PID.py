@@ -1,9 +1,8 @@
 import psutil
 import platform
 import argparse
-import sys, socket, math
+import sys, socket
 import time
-import multiprocessing as mp
 from datetime import datetime
 from influx_line_protocol import Metric, MetricCollection
 
@@ -32,17 +31,17 @@ def influxOutput(proc):
 
 def setSeverity(cpu_percent, pname, pID):
         '''
-        Compares system CPU times elapsed before and after interval. Should be at least .1
+        Compares system CPU times elapsed before and after interval.
         Pass in CPU_Percent to compare against and the Process's name to attach to summary.
         '''
         if cpu_percent >= args.warning and cpu_percent < args.critical:
-                return 'WARNING', 'CPU utilization at %s percent on %s %s'%(cpu_percent, pname, pID)
+                return 'WARNING', 'CPU\ utilization\ at\ %s\ percent\ on\ %s\ %s'%(cpu_percent, pname, pID)
                 #sys.exit(1)
         elif cpu_percent >= args.critical:
-                return 'CRITICAL', 'CPU utilization at %s percent on %s %s'%(cpu_percent, pname, pID)
+                return 'CRITICAL', 'CPU\ utilization\ at\ %s\ percent\ on\ %s\ %s'%(cpu_percent, pname, pID)
                 #sys.exit(2)
         else:
-                return 'OK', 'CPU utilization at %s percent on %s %s'%(cpu_percent, pname, pID)
+                return 'OK', 'CPU\ utilization\ at\ %s\ percent\ on\ %s \%s'%(cpu_percent, pname, pID)
                 #sys.exit(0)
 
 def hoglist(delay=5):
@@ -66,6 +65,7 @@ def hoglist(delay=5):
         # if (proc.name() == 'python'): continue
         try:
                 percent = proc.cpu_percent(None)
+                #user = proc.username() == 'NT AUTHORITY SYSTEM' 
                 severity, summary = setSeverity(percent, proc.name(), proc.pid)
                 if percent:
                         procs.append({
@@ -75,7 +75,7 @@ def hoglist(delay=5):
                             'severity': severity,
                             'summary': summary,
                             'source': socket.gethostname(),
-                            'class': 'Process by CPU',
+                            'class': 'Process\ by\ CPU',
                             # 'timestamp': datetime.utcnow().isoformat() + 'Z',          
                             # 'group': ''            
                             })
