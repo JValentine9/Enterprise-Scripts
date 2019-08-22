@@ -1,10 +1,10 @@
 import psutil, argparse, sys, re, os, sys, csv, time, datetime
 
 parser = argparse.ArgumentParser(description='Get error and warning thresholds')
-parser.add_argument("-w","--warning",help="Total percent of disk space free below which will generate a warning",type=float)
-parser.add_argument("-c","--critical",help="Total percent of disk space free below which will generate a critical error",type=float)
-parser.add_argument("-f","--file",help="location of the WizTree export csv")
-parser.add_argument("-n","--number",help="Number of files to return",type=int)
+parser.add_argument("-w","--warning",help="Total percent of disk space free below which will generate a warning",type=float,required=True)
+parser.add_argument("-c","--critical",help="Total percent of disk space free below which will generate a critical error",type=float,required=True)
+parser.add_argument("-f","--file",help="location of the WizTree export csv",required=True)
+parser.add_argument("-n","--number",help="Number of files to return",type=int,required=True)
 
 args = parser.parse_args()
 
