@@ -22,11 +22,7 @@ def ProcessData(severity, summary):
         output = ""
         for x in FileContents[:numReturn]:
                 #print(x['File Name'], x['Size'])
-                print("Disk_Check_All,Hostname:" + str(socket.gethostname()) + ",Summary:" + str(summary) + ",File Name:" + 
-                        str(x['File Name']) + ",Size(bytes):" + 
-                        str(['Size']) + 
-                        ",Severity:" + 
-                        severity)
+                print("Disk_Check_All,Hostname:" + str(socket.gethostname()) + ",Summary:" + str(summary) + ",File Name:" + str(x['File Name']) + ",Size(bytes):" + str(['Size']) + ",Severity:" + severity)
 
         
         
