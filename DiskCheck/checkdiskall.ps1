@@ -1,5 +1,5 @@
 ﻿#run WizTree on all available disks
-
+choco install wiztree
 .\WizTree.exe "C:" /admin=1 /export="C:\temp\WizTree\WizTreeExport.csv"
 
 #run Python script against all reports
