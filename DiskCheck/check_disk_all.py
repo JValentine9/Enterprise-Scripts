@@ -1,4 +1,4 @@
-import psutil, argparse, sys, re, os, sys, csv, time, datetime
+import psutil, argparse, sys, re, os, sys, csv, time, datetime, socket
 
 parser = argparse.ArgumentParser(description='Get error and warning thresholds')
 parser.add_argument("-w","--warning",help="Total percent of disk space free below which will generate a warning",type=float,required=True)
@@ -10,14 +10,20 @@ args = parser.parse_args()
 
 FileContents=[]
 
-def ProcessData(severity):
-        with open(args.file, 'r') as f:
-                FileContents = [{k: v for k, v in row.items()} for row in csv.DictReader(f, skipinitialspace=True)]
-        FileContents = sorted(FileContents, key = lambda i: i['b'], reverse = True)
+def ProcessData(severity, summary):
+        with open(args.file, 'r') as csvfile:
+                next(csvfile)
+                csvreader = csv.DictReader(csvfile)
+                FileContents = list(csvreader)
+                #print(FileContents)
+        FileContents = sorted(FileContents, key = lambda i: i['Size'], reverse = True)
         #FileContents[:5]
         numReturn = args.number
+        output = ""
         for x in FileContents[:numReturn]:
-                print(x['a'], x['b'])
+                print(x)
+                #print("Hostname:" + socket.gethostname() + ",Summary:" + summary + ",File Name:" + x['a'] + ",Size(bytes):" + x['b'] + ",Severity:" + severity)
+
         
         
 
@@ -42,18 +48,10 @@ if crits and warns:
                 print (x)
         sys.exit(2)
 elif crits and not warns:
-        print (crits)
-        ProcessData("Critical")
-        ts = time.time()
-        time = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-        print("Critical", time, "class", "component", "group")
+        ProcessData("Critical", crits)
         sys.exit(2)
 elif warns and not crits:
-        print (warns)
-        ProcessData("Warning")
-        ts = time.time
-        time = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-        print("Critical", time, "class", "component", "group")
+        ProcessData("Warning", warns)
         sys.exit(1)
 else:
         print ("OK")
