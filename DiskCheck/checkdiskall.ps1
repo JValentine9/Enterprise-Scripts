@@ -7,3 +7,4 @@ python check_disk_all.py -w 20 -c 15 -f "C:\temp\WizTree\WizTreeExport.csv" -n 5
 
 #Remove WizTree report
 Remove-Item -path "C:\TempWizTree" -Recurse
+##os.system(run commands)
